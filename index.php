@@ -39,12 +39,14 @@
             if (isset($_GET["username_reg"]) and isset($_GET["password_reg"])) {
                 $tmp_usernamereg = filter_input(INPUT_POST, 'username_reg', FILTER_SANITIZE_SPECIAL_CHARS);
                 $tmp_passwordreg = filter_input(INPUT_POST, 'password_reg', FILTER_SANITIZE_SPECIAL_CHARS);
-                $sql = 'INSERT INTO `users`(`username`, `password`) VALUES ("","' . $tmp_usernamereg . '", ' . $tmp_passwordreg . ')';
+                $sql = 'INSERT INTO `users`(`username`, `password`) VALUES ("'. $tmp_username .'","' . $tmp_password . '")';
                 $stmt = $dbh->prepare($sql);
                 $stmt->execute();
             }
             if (isset($_GET["username"]) and isset($_GET["password"])) {
-                $sql = "SELECT * FROM users WHERE username='" . $_GET["username"] . "' AND password='" . $_GET["password"] . "'";
+                $tmp_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS);
+                $tmp_password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
+                $sql = "SELECT * FROM users WHERE username='" . $tmp_username . "' AND password='" . $tmp_password . "'";
                 $stmt = $dbh->prepare($sql);
                 $stmt->execute();
                 $users = $stmt->fetchAll();
