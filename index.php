@@ -65,7 +65,7 @@
             echo "<form method='POST'>";
             echo "<input type='hidden' name='loggaut'>";
             echo "<input type='submit' value='logga ut'>";
-            echo "</form>";
+            echo "</form>"; 
         }
         if (isset($_POST["loggaut"])) {
             session_destroy();
