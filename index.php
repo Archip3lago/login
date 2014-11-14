@@ -20,34 +20,18 @@
 
         //Finns inte sessionen inloggad, körs kod nedan
         if (!isset($_SESSION["inloggad"])) {
-            //Skapar ett formulär för att logga in.
-            echo "<h1>Logga in</h1>";
-            echo "<form method='POST'>";
-            echo "<p>Username</p>";
-            echo "<input type='text' name='username'>";
-            echo "<p>Password</p>";
-            echo "<input type='password' name='password'>";
-            echo "<input type='submit' value='logga in'>";
-            echo "</form>";
             
-            //skapar ett formulär för att registrera en ny användare
-            echo "<h1>Registrera</h1>";
-            echo "<form method='POST'>";
-            echo "<p>Username</p>";
-            echo "<input type='text' name='username_reg'>";
-            echo "<p>Password</p>";
-            echo "<input type='password' name='password_reg'>";
-            echo "<input type='submit' value='registrera'>";
-            echo "</form>";
-
+            include 'form.php';
             //Har man skrivit in data i registreringsformuläret, körs koden nedan
             if (isset($_POST["username_reg"]) and isset($_POST["password_reg"])) {
                 //Ser till så att man inte sparar js/css/php/sql kod i databasen och sparar värdena i temporära variabler
                 $tmp_usernamereg = filter_input(INPUT_POST, 'username_reg', FILTER_SANITIZE_SPECIAL_CHARS);
                 $tmp_passwordreg = filter_input(INPUT_POST, 'password_reg', FILTER_SANITIZE_SPECIAL_CHARS);
                 //Skapar sql-fråga och kör den, lägger till användare enligt information från formuläret.
-                $sql = 'INSERT INTO `users`(`username`, `password`) VALUES ("'. $tmp_usernamereg .'","' . $tmp_passwordreg . '")';
+                $sql = 'INSERT INTO `users`(`username`, `password`) VALUES (:username_reg, :password_reg)';
                 $stmt = $dbh->prepare($sql);
+                $stmt->bindParam(":username_reg", $tmp_usernamereg);
+                $stmt->bindParam(":password_reg", $tmp_passwordreg);
                 $stmt->execute();
                 //Skickar tillbaks till index.php så att man inte råkar registrera fler av samma nvändare
                 header("Location:?");
@@ -59,8 +43,10 @@
                 $tmp_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS);
                 $tmp_password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
                 //Matcher både användarnamn och lösenord någon del i databasen, skickas värden tillbaks till $users variabeln
-                $sql = "SELECT * FROM users WHERE username='" . $tmp_username . "' AND password='" . $tmp_password . "'";
+                $sql = "SELECT * FROM users WHERE username=:username AND password=:password";
                 $stmt = $dbh->prepare($sql);
+                $stmt->bindParam(":username", $tmp_username);
+                $stmt->bindParam(":password", $tmp_password);
                 $stmt->execute();
                 $users = $stmt->fetchAll();
                 //Finns det något i $users skapas sessionen "inloggad"
